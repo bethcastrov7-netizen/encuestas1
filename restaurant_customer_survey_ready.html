@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Encuesta Rápida – Ayúdanos a Servirte Mejor</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #f2f5f0;
+    --card: #fafcf9;
+    --ink: #1a2318;
+    --muted: #6b7c68;
+    --accent: #6a9470;
+    --accent-dark: #4e7454;
+    --accent-light: #e3ede4;
+    --border: #cfdccc;
+    --hero-bg: #253323;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  .hero {
+    background: var(--hero-bg);
+    padding: 48px 24px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 70% 40%, #6a947022 0%, transparent 65%),
+                radial-gradient(ellipse at 15% 85%, #4e745418 0%, transparent 55%);
+  }
+  .hero-tag {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #9dc4a2;
+    border: 1px solid #4e7454;
+    padding: 4px 14px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 6vw, 40px);
+    color: #eef4ee;
+    line-height: 1.2;
+    position: relative;
+    max-width: 480px;
+    margin: 0 auto 12px;
+  }
+  .hero h1 em { color: #9dc4a2; font-style: italic; }
+  .hero p {
+    color: #8aaa88;
+    font-size: 14px;
+    font-weight: 300;
+    max-width: 380px;
+    margin: 0 auto;
+    position: relative;
+    line-height: 1.6;
+  }
+
+  .progress-wrap { background: var(--border); height: 3px; position: sticky; top: 0; z-index: 10; }
+  .progress-bar { height: 3px; background: var(--accent); width: 0%; transition: width 0.4s ease; }
+
+  .container { max-width: 600px; margin: 0 auto; padding: 0 20px; }
+
+  .step { display: none; animation: fadeUp 0.35s ease forwards; }
+  .step.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 28px;
+    margin-top: 28px;
+    box-shadow: 0 2px 20px rgba(26,35,24,0.06);
+  }
+
+  .q-number {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .q-label {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(17px, 4vw, 21px);
+    line-height: 1.4;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .q-sub { font-size: 13px; color: var(--muted); margin-bottom: 22px; line-height: 1.5; }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    background: #fff;
+    font-size: 14px;
+    color: var(--ink);
+    text-align: left;
+  }
+  .option:hover { border-color: var(--accent); background: var(--accent-light); }
+  .option.selected { border-color: var(--accent); background: var(--accent-light); color: var(--accent-dark); font-weight: 500; }
+  .option-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    transition: all 0.18s;
+  }
+  .option.selected .option-dot { background: var(--accent); border-color: var(--accent); }
+
+  textarea {
+    width: 100%;
+    min-height: 110px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    resize: vertical;
+    background: #fff;
+    transition: border-color 0.18s;
+    outline: none;
+    line-height: 1.6;
+  }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: #a8bca6; }
+
+  .scale-wrap { display: flex; gap: 8px; flex-wrap: wrap; }
+  .scale-btn {
+    flex: 1; min-width: 38px;
+    padding: 11px 6px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.18s;
+    color: var(--ink);
+    text-align: center;
+  }
+  .scale-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+  .scale-btn.selected { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  .scale-labels { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--muted); }
+
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; gap: 12px; }
+  .btn {
+    padding: 13px 28px;
+    border-radius: 100px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+  .btn-primary { background: var(--accent); color: #fff; flex: 1; max-width: 200px; }
+  .btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--muted); color: var(--ink); }
+  .step-counter { font-size: 12px; color: var(--muted); letter-spacing: 0.05em; }
+
+  .thankyou { text-align: center; padding: 60px 20px; display: none; animation: fadeUp 0.4s ease forwards; }
+  .thankyou.active { display: block; }
+  .ty-icon {
+    width: 72px; height: 72px;
+    background: var(--accent-light);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 32px;
+  }
+  .thankyou h2 { font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 12px; color: var(--ink); }
+  .thankyou p { color: var(--muted); font-size: 14px; line-height: 1.7; max-width: 340px; margin: 0 auto; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">3 minutos · anónimo</div>
+  <h1>Ayúdanos a hacer tus pedidos <em>más fáciles</em></h1>
+  <p>Estamos explorando mejores formas para que los restaurantes locales gestionen sus pedidos. Tu experiencia importa — no hay respuestas correctas o incorrectas.</p>
+</div>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="container">
+
+  <!-- P1 -->
+  <div class="step active" id="step-1">
+    <div class="q-card">
+      <div class="q-number">Pregunta 1 de 10</div>
+      <div class="q-label">¿Cómo sueles hacer tu pedido en un restaurante local pequeño?</div>
+      <div class="q-sub">Elige la opción que usas con más frecuencia.</div>
+      <div class="options" id="q1">
+        <label class="option"><span class="option-dot"></span> Mensaje de WhatsApp</label>
+        <label class="option"><span class="option-dot"></span> Llamada telefónica</label>
+        <label class="option"><span class="option-dot"></span> Voy directamente al local</label>
+        <label class="option"><span class="option-dot"></span> App de delivery (Uber Eats, etc.)</label>
+        <label class="option"><span class="option-dot"></span> DM por Instagram u otra red social</label>
+      </div>
+    </div>
+    <div class="nav">
+      <div class="step-counter">1 / 10</div>
+      <button class="btn btn-primary" onclick="next(1)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- P2 -->
+  <div class="step" id="step-2">
+    <div class="q-card">
+      <div class="q-number">Pregunta 2 de 10</div>
+      <div class="q-label">¿Alguna vez quisiste hacer un pedido pero te rendiste antes de completarlo?</div>
+      <div class="q-sub">Sé honesto/a — queremos entender la experiencia real.</div>
+      <div class="options" id="q2">
+        <label class="option"><span class="option-dot"></span> Sí, no me respondieron por WhatsApp</label>
+        <label class="option"><span class="option-dot"></span> Sí, el teléfono sonó y nadie contestó</label>
+        <label class="option"><span class="option-dot"></span> Sí, no sabía qué había en el menú</label>
+        <label class="option"><span class="option-dot"></span> No, siempre ha ido bien</label>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="back(2)">← Atrás</button>
+      <div class="step-counter">2 / 10</div>
+      <button class="btn btn-primary" onclick="next(2)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- P3 -->
+  <div class="step" id="step-3">
+    <div class="q-card">
+      <div class="q-number">Pregunta 3 de 10</div>
+      <div class="q-label">Cuando le escribes a un restaurante por WhatsApp, ¿cuánto tiempo estás dispuesto/a a esperar una respuesta?</div>
+      <div class="options" id="q3">
+        <label class="option"><span class="option-dot"></span> Menos de 5 minutos</label>
+        <label class="option"><span class="option-dot"></span> 5–15 minutos</label>
+        <label class="option"><span class="option-dot"></span> Hasta 30 minutos</label>
+        <label class="option"><span class="option-dot"></span> No me importa esperar, siempre que respondan</label>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="back(3)">← Atrás</button>
+      <div class="step-counter">3 / 10</div>
+      <button class="btn btn-primary" onclick="next(3)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- P4 — NEW -->
+  <div class="step" id="step-4">
+    <div class="q-card">
+      <div class="q-number">Pregunta 4 de 10</div>
+      <div class="q-label">¿Alguna vez dejaste de pedirle a un restaurante porque tardó demasiado en responderte por WhatsApp?</div>
+      <div class="q-sub">Queremos entender si la velocidad de respuesta afecta tu decisión de compra.</div>
+      <div class="options" id="q4">
+        <label class="option"><span class="option-dot"></span> Sí, fui a otro lugar a pedir</label>
+        <label class="option"><span class="option-dot"></span> Sí, pero esperé y al final pedí ahí</label>
+        <label class="option"><span class="option-dot"></span> No, siempre espero sin importar cuánto tarde</label>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="back(4)">← Atrás</button>
+      <div class="step-counter">4 / 10</div>
+      <button class="btn btn-primary" onclick="next(4)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- P5 — NEW -->
+  <div class="step" id="step-5">
+    <div class="q-card">
+      <div class="q-number">Pregunta 5 de 10</div>
+      <div class="q-label">¿Alguna vez has interactuado con un chatbot automatizado — en WhatsApp, una página web o una app?</div>
+      <div class="q-sub">Por ejemplo: asistentes virtuales, bots de atención al cliente, pedidos automáticos.</div>
+      <div class="options" id="q5">
+        <label class="option"><span class="option-dot"></span> Sí, y fue una buena experiencia</label>
+        <label class="option"><span class="option-dot"></span> Sí, pero fue frustrante o confuso</label>
+        <label class="option"><span class="option-dot"></span> No, nunca he usado uno</label>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="back(5)">← Atrás</button>
+      <div class="step-counter">5 / 10</div>
+      <button class="btn btn-primary" onclick="next(5)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- P6 — NEW -->
+  <div class="step" id="step-6">
+    <div class="q-card">
+      <div class="q-number">Pregunta 6 de 10</div>
+      <div class="q-label">Si un restaurante te responde en menos de 1 minuto con el menú completo y confirma tu pedido automáticamente, ¿qué tan probable es que lo elijas sobre uno que tarda 20 minutos?</div>
+      <div class="options" id="q6">
+        <label class="option"><span class="option-dot"></span> Mucho más probable — la rapidez es importante para mí</label>
+        <label class="option"><span class="option-dot"></span> Un poco más probable — pero no es lo más importante</label>
+        <label class="option"><span class="option-dot"></span> No me afecta — elijo por la comida, no la velocidad</label>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="back(6)">← Atrás</button>
+      <div class="step-counter">6 / 10</div>
+      <button class="btn btn-primary" onclick="next(6)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- P7 -->
+  <div class="step" id="step-7">
+    <div class="q-card">
+      <div class="q-number">Pregunta 7 de 10</div>
+      <div class="q-label">Si un restaurante te respondiera al instante con el menú, precios y confirmación de pedido — todo automatizado — ¿cómo te sentirías?</div>
+      <div class="q-sub">Sé honesto/a, incluso si prefieres hablar con una persona real.</div>
+      <div class="options" id="q7">
+        <label class="option"><span class="option-dot"></span> Me encantaría — rápido y cómodo</label>
+        <label class="option"><span class="option-dot"></span> Estaría bien, siempre que funcione correctamente</label>
+        <label class="option"><span class="option-dot"></span> Estaría un poco inseguro/a pero lo intentaría</label>
+        <label class="option"><span class="option-dot"></span> Preferiría hablar con una persona real</label>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="back(7)">← Atrás</button>
+      <div class="step-counter">7 / 10</div>
+      <button class="btn btn-primary" onclick="next(7)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- P8 -->
+  <div class="step" id="step-8">
+    <div class="q-card">
+      <div class="q-number">Pregunta 8 de 10</div>
+      <div class="q-label">¿Qué te haría confiar en que tu pedido fue recibido correctamente por un sistema automático?</div>
+      <div class="q-sub">Selecciona todas las que apliquen.</div>
+      <div class="options" id="q8" data-multi="true">
+        <label class="option"><span class="option-dot"></span> Un mensaje de confirmación con los detalles del pedido</label>
+        <label class="option"><span class="option-dot"></span> Un tiempo estimado de espera o entrega</label>
+        <label class="option"><span class="option-dot"></span> Poder llamar si algo sale mal</label>
+        <label class="option"><span class="option-dot"></span> Un recibo o número de pedido</label>
+        <label class="option"><span class="option-dot"></span> Que una persona confirme el pedido</label>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="back(8)">← Atrás</button>
+      <div class="step-counter">8 / 10</div>
+      <button class="btn btn-primary" onclick="next(8)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- P9 Scale -->
+  <div class="step" id="step-9">
+    <div class="q-card">
+      <div class="q-number">Pregunta 9 de 10</div>
+      <div class="q-label">En general, ¿qué tan satisfecho/a estás con la forma en que los restaurantes locales pequeños manejan tus pedidos hoy?</div>
+      <div class="q-sub">1 = Muy frustrado/a &nbsp;·&nbsp; 5 = Completamente satisfecho/a</div>
+      <div class="scale-wrap" id="q9">
+        <button class="scale-btn" onclick="selectScale(this, 'q9')">1</button>
+        <button class="scale-btn" onclick="selectScale(this, 'q9')">2</button>
+        <button class="scale-btn" onclick="selectScale(this, 'q9')">3</button>
+        <button class="scale-btn" onclick="selectScale(this, 'q9')">4</button>
+        <button class="scale-btn" onclick="selectScale(this, 'q9')">5</button>
+      </div>
+      <div class="scale-labels"><span>Muy frustrado/a</span><span>Completamente satisfecho/a</span></div>
+    </div>
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="back(9)">← Atrás</button>
+      <div class="step-counter">9 / 10</div>
+      <button class="btn btn-primary" onclick="next(9)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- P10 Open -->
+  <div class="step" id="step-10">
+    <div class="q-card">
+      <div class="q-number">Pregunta 10 de 10</div>
+      <div class="q-label">Cuéntanos sobre la última vez que hacer un pedido en un restaurante pequeño fue frustrante. ¿Qué pasó?</div>
+      <div class="q-sub">Omite si nunca te ha pasado — pero cualquier detalle nos ayuda mucho.</div>
+      <textarea id="q10" placeholder="Ej: Les escribí por WhatsApp y nunca me respondieron, así que terminé pidiendo en otro lugar..."></textarea>
+    </div>
+    <div class="nav">
+      <button class="btn btn-ghost" onclick="back(10)">← Atrás</button>
+      <div class="step-counter">10 / 10</div>
+      <button class="btn btn-primary" onclick="submit()">Enviar ✓</button>
+    </div>
+  </div>
+
+  <!-- Thank you -->
+  <div class="thankyou" id="thankyou">
+    <div class="ty-icon">🌿</div>
+    <h2>¡Muchas gracias!</h2>
+    <p>Tus respuestas nos ayudarán directamente a mejorar la forma en que los restaurantes locales te atienden. Apreciamos mucho el tiempo que nos diste.</p>
+  </div>
+
+</div>
+
+<script>
+  const TOTAL = 10;
+
+  function updateProgress(step) {
+    document.getElementById('progressBar').style.width = ((step / TOTAL) * 100) + '%';
+  }
+
+  document.querySelectorAll('.options:not([data-multi]) .option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      opt.closest('.options').querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+    });
+  });
+
+  document.querySelectorAll('.options[data-multi] .option').forEach(opt => {
+    opt.addEventListener('click', () => opt.classList.toggle('selected'));
+  });
+
+  function selectScale(btn, groupId) {
+    document.querySelectorAll(`#${groupId} .scale-btn`).forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  function next(current) {
+    document.getElementById(`step-${current}`).classList.remove('active');
+    document.getElementById(`step-${current + 1}`).classList.add('active');
+    updateProgress(current + 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function back(current) {
+    document.getElementById(`step-${current}`).classList.remove('active');
+    document.getElementById(`step-${current - 1}`).classList.add('active');
+    updateProgress(current - 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async function submit() {
+    const answers = {
+      "P1 - Canal de pedido":           getSelected("q1"),
+      "P2 - Se rindio alguna vez":       getSelected("q2"),
+      "P3 - Tiempo de espera":           getSelected("q3"),
+      "P4 - Fue a otro lugar":           getSelected("q4"),
+      "P5 - Experiencia chatbot":        getSelected("q5"),
+      "P6 - Prefiere respuesta rapida":  getSelected("q6"),
+      "P7 - Siente con automatizacion":  getSelected("q7"),
+      "P8 - Confianza sistema auto":     getMultiSelected("q8"),
+      "P9 - Satisfaccion actual":        getScale("q9"),
+      "P10 - Experiencia frustrante":    document.getElementById("q10").value || "Sin respuesta"
+    };
+    try {
+      await fetch("https://formspree.io/f/maqpwwrp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(answers)
+      });
+    } catch(e) { console.error("Error:", e); }
+
+    document.getElementById('step-10').classList.remove('active');
+    document.getElementById('thankyou').classList.add('active');
+    document.getElementById('progressBar').style.width = '100%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function getSelected(id) {
+    const sel = document.querySelector("#" + id + " .option.selected");
+    return sel ? sel.textContent.trim() : "Sin respuesta";
+  }
+  function getMultiSelected(id) {
+    const sels = document.querySelectorAll("#" + id + " .option.selected");
+    return sels.length ? [...sels].map(s => s.textContent.trim()).join(" | ") : "Sin respuesta";
+  }
+  function getScale(id) {
+    const sel = document.querySelector("#" + id + " .scale-btn.selected");
+    return sel ? sel.textContent.trim() : "Sin respuesta";
+  }
+
+  updateProgress(1);
+</script>
+</body>
+</html>
